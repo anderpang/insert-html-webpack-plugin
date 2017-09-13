@@ -9,7 +9,7 @@ class InsertHtmlWebpackPlugin
           }
           */
 
-          this.options=options;
+          this.options=options||{};
     }
 
     apply(compiler){
@@ -17,23 +17,23 @@ class InsertHtmlWebpackPlugin
         compiler.plugin("compilation",(compilation)=>{
             compilation.plugin("html-webpack-plugin-before-html-processing",(pluginArgs,callback)=>{
                 var assets=pluginArgs.assets,
-                    js=this.options.js,
-                    css=this.options.css;
+                    options=this.options;
              
-                if(typeof js!=="undefined")
-                {
-                      Array.isArray(js)?assets.js=js.concat(assets.js):assets.js.unshift(js);
-                }
-                
-                if(typeof css!=="undefined")
-                {
-                      Array.isArray(css)?assets.css=css.concat(assets.css):assets.css.unshift(css);
-                }
+                this._doInsert(assets,options);               
 
                 callback(null,pluginArgs);
 
             });
         });
+    }
+
+    _doInsert(assets,options){
+        var list;
+        for(var key in options)
+        {
+           list=options[key];
+           Array.isArray(list)?assets[key]=list.concat(assets[key]):assets[key].unshift(list);
+        }
     }
 }
 
